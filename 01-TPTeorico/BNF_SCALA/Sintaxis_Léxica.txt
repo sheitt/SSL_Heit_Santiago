@@ -1,0 +1,89 @@
+whiteSpace       ::=  ‘\u0020’ | ‘\u0009’ | ‘\u000D’ | ‘\u000A’
+upper            ::=  ‘A’ | ... | ‘Z’ | ‘$’ and any character in Unicode categories Lu, Lt or Nl,
+                      and any character in Unicode categories Lo and Lm that doesn't have
+                      contributory property Other_Lowercase
+lower            ::=  ‘a’ | ... | ‘z’ | ‘_’ and any character in Unicode category Ll,
+                      and any character in Unicode categories Lo or Lm that has contributory
+                      property Other_Lowercase
+letter           ::=  upper | lower
+digit            ::=  ‘0’ | ... | ‘9’
+paren            ::=  ‘(’ | ‘)’ | ‘[’ | ‘]’ | ‘{’ | ‘}’
+delim            ::=  ‘`’ | ‘'’ | ‘"’ | ‘.’ | ‘;’ | ‘,’
+opchar           ::=  ‘!’ | ‘#’ | ‘%’ | ‘&’ | ‘*’ | ‘+’ | ‘-’ | ‘/’ | ‘:’ |
+                      ‘<’ | ‘=’ | ‘>’ | ‘?’ | ‘@’ | ‘\’ | ‘^’ | ‘|’ | ‘~’
+                      and any character in Unicode categories Sm or So
+printableChar    ::=  all characters in [\u0020, \u007E] inclusive
+UnicodeEscape    ::=  ‘\’ ‘u’ {‘u’} hexDigit hexDigit hexDigit hexDigit
+hexDigit         ::=  ‘0’ | ... | ‘9’ | ‘A’ | ... | ‘F’ | ‘a’ | ... | ‘f’
+charEscapeSeq    ::=  ‘\’ (‘b’ | ‘t’ | ‘n’ | ‘f’ | ‘r’ | ‘"’ | ‘'’ | ‘\’)
+escapeSeq        ::=  UnicodeEscape | charEscapeSeq
+
+op               ::=  opchar {opchar}
+varid            ::=  lower idrest
+boundvarid       ::=  varid
+                   |  ‘`’ varid ‘`’
+plainid          ::=  alphaid
+                   |  op
+id               ::=  plainid
+                   |  ‘`’ { charNoBackQuoteOrNewline | escapeSeq } ‘`’
+idrest           ::=  {letter | digit} [‘_’ op]
+quoteId          ::=  ‘'’ alphaid
+spliceId         ::=  ‘$’ alphaid ;
+
+integerLiteral   ::=  (decimalNumeral | hexNumeral | binaryNumeral) [‘L’ | ‘l’]
+decimalNumeral   ::=  ‘0’ | digit [{digit | ‘_’} digit]
+hexNumeral       ::=  ‘0’ (‘x’ | ‘X’) hexDigit [{hexDigit | ‘_’} hexDigit]
+binaryNumeral    ::=  ‘0’ (‘b’ | ‘B’) binaryDigit [{binaryDigit | ‘_’} binaryDigit]
+
+floatingPointLiteral
+                 ::=  [decimalNumeral] ‘.’ digit [{digit | ‘_’} digit] [exponentPart] [floatType]
+                   |  decimalNumeral exponentPart [floatType]
+                   |  decimalNumeral floatType
+exponentPart     ::=  (‘E’ | ‘e’) [‘+’ | ‘-’] digit [{digit | ‘_’} digit]
+floatType        ::=  ‘F’ | ‘f’ | ‘D’ | ‘d’
+
+booleanLiteral   ::=  ‘true’ | ‘false’
+
+characterLiteral ::=  ‘'’ (charNoQuoteOrNewline | escapeSeq) ‘'’
+
+stringLiteral    ::=  ‘"’ {stringElement} ‘"’
+                   |  ‘"""’ multiLineChars ‘"""’
+stringElement    ::=  charNoDoubleQuoteOrNewline
+                   |  escapeSeq
+multiLineChars   ::=  {[‘"’] [‘"’] charNoDoubleQuote} {‘"’}
+
+interpolatedString
+                 ::=  alphaid ‘"’ {[‘\’] interpolatedStringPart | ‘\\’ | ‘\"’} ‘"’
+                   |  alphaid ‘"""’ {[‘"’] [‘"’] char \ (‘"’ | ‘\$’) | escape} {‘"’} ‘"""’
+interpolatedStringPart
+                 ::= printableChar \ (‘"’ | ‘$’ | ‘\’) | escape
+escape           ::=  ‘\$\$’
+                   |  ‘\$"’
+                   |  ‘\$’ alphaid
+                   |  ‘\$’ BlockExpr
+alphaid          ::=  upper idrest
+                   |  varid
+
+comment          ::=  ‘/*’ “any sequence of characters; nested comments are allowed” ‘*/’
+                   |  ‘//’ “any sequence of characters up to end of line”
+
+nl               ::=  “new line character”
+semi             ::=  ‘;’ |  nl {nl}
+
+colon         ::=  ':'    -- with side conditions explained above
+ <<< ts >>>   ::=  ‘{’ ts ‘}’
+                |  indent ts outdent
+:<<< ts >>>   ::=  [nl] ‘{’ ts ‘}’
+                |  colon indent ts outdent
+
+abstract  case      catch     class     def       do        else
+enum      export    extends   false     final     finally   for
+given     if        implicit  import    lazy      match     new
+null      object    override  package   private   protected return
+sealed    super     then      throw     trait     true      try
+type      val       var       while     with      yield
+:         =         <-        =>        <:        >:        #
+@         =>>       ?=>
+
+as  derives  end  extension  infix  inline  opaque  open  transparent  using  |  *  +  -
+

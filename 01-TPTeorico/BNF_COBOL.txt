@@ -1,0 +1,98 @@
+<programa> ::= <identification-division>
+               <environment-division>
+               <data-division>
+               <procedure-division>
+
+<identification-division> ::= "IDENTIFICATION DIVISION."
+                              "PROGRAM-ID." <identificador> "."
+
+<environment-division> ::= "ENVIRONMENT DIVISION."
+                           [<configuration-section>]
+                           [<input-output-section>]
+
+<data-division> ::= "DATA DIVISION."
+                    {<seccion-datos>}*
+
+<seccion-datos> ::= <variable>
+                  | <arreglo>
+
+<variable> ::= <nivel> <identificador> "PIC" <tipo> ["VALUE" <literal>] "."
+
+<arreglo> ::= <nivel> <identificador> "."
+              <nivel-hijo> <identificador>
+              "OCCURS" <numero> "TIMES"
+              "PIC" <tipo> "."
+
+<procedure-division> ::= "PROCEDURE DIVISION."
+                         {<sentencia>}+
+
+<sentencia> ::= <move>
+              | <display>
+              | <if>
+              | <perform>
+              | <compute>
+              | <accept>
+              | <stop-run>
+
+<move> ::= "MOVE" <expresion>
+           "TO"
+           <identificador>
+           {<identificador>}*
+           "."
+
+<display> ::= "DISPLAY" <expresion> "."
+
+<if> ::= "IF" <condicion>
+         {<sentencia>}+
+         ["ELSE" {<sentencia>}+]
+         "END-IF"
+
+<perform> ::= "PERFORM" <identificador>
+            | "PERFORM VARYING"
+              <identificador>
+              "FROM" <expresion>
+              "BY" <expresion>
+              "UNTIL" <condicion>
+              {<sentencia>}+
+              "END-PERFORM"
+
+<compute> ::= "COMPUTE"
+              <identificador>
+              "="
+              <expresion>
+              "."
+
+<accept> ::= "ACCEPT" <identificador> "."
+
+<stop-run> ::= "STOP RUN."
+
+<condicion> ::= <identificador> <operador> <expresion>
+
+<operador> ::= "="
+             | "<"
+             | ">"
+             | "<="
+             | ">="
+             | "<>"
+
+<expresion> ::= <identificador>
+              | <literal>
+              | <funcion>
+              | <expresion> "+" <expresion>
+              | <expresion> "-" <expresion>
+              | <expresion> "*" <expresion>
+              | <expresion> "/" <expresion>
+
+<funcion> ::= "FUNCTION" <identificador>
+
+<nivel> ::= "01" | "05" | "10" | "15"
+
+<nivel-hijo> ::= "05" | "10" | "15"
+
+<tipo> ::= "9(5)"
+         | "9(9)"
+         | "X(30)"
+
+<identificador> ::= <letra> {<letra> | <digito> | "-"}*
+
+<literal> ::= <numero> | <cadena>
